@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mrjoshuak/gotio/opentime"
+	"github.com/Avalanche-io/gotio/opentime"
 )
 
 // Common ALE column names

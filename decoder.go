@@ -9,8 +9,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mrjoshuak/gotio/opentime"
-	"github.com/mrjoshuak/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio/opentime"
+	"github.com/Avalanche-io/gotio/opentimelineio"
 )
 
 // Decoder reads and decodes ALE files into OTIO timelines

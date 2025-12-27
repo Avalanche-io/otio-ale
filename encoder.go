@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mrjoshuak/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio/opentimelineio"
 )
 
 // Encoder writes OTIO timelines as ALE files
