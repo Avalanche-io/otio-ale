@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/Avalanche-io/gotio/opentime"
-	"github.com/Avalanche-io/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio"
 )
 
 func TestDecoder_BasicALE(t *testing.T) {
@@ -62,7 +62,7 @@ Clip003	01:00:10:00	01:00:15:00	120
 	}
 
 	// Verify first clip
-	clip := clips[0].(*opentimelineio.Clip)
+	clip := clips[0].(*gotio.Clip)
 	if clip.Name() != "Clip001" {
 		t.Errorf("Expected clip name 'Clip001', got '%s'", clip.Name())
 	}
@@ -103,7 +103,7 @@ Clip001	100
 	}
 
 	clips := timeline.VideoTracks()[0].Children()
-	clip := clips[0].(*opentimelineio.Clip)
+	clip := clips[0].(*gotio.Clip)
 
 	sourceRange := clip.SourceRange()
 	if sourceRange.Duration().Rate() != 30.0 {
@@ -129,7 +129,7 @@ MyClip	50
 	}
 
 	clips := timeline.VideoTracks()[0].Children()
-	clip := clips[0].(*opentimelineio.Clip)
+	clip := clips[0].(*gotio.Clip)
 
 	if clip.Name() != "MyClip" {
 		t.Errorf("Expected clip name 'MyClip', got '%s'", clip.Name())
@@ -171,7 +171,7 @@ Clip001	100	A001	Scene1
 	}
 
 	clips := timeline.VideoTracks()[0].Children()
-	clip := clips[0].(*opentimelineio.Clip)
+	clip := clips[0].(*gotio.Clip)
 
 	metadata := clip.Metadata()
 	// Extra columns are now stored in metadata["ALE"]
@@ -210,14 +210,14 @@ Clip001	100	/path/to/media.mov
 	}
 
 	clips := timeline.VideoTracks()[0].Children()
-	clip := clips[0].(*opentimelineio.Clip)
+	clip := clips[0].(*gotio.Clip)
 
 	mediaRef := clip.MediaReference()
 	if mediaRef == nil {
 		t.Fatal("Clip has no media reference")
 	}
 
-	extRef, ok := mediaRef.(*opentimelineio.ExternalReference)
+	extRef, ok := mediaRef.(*gotio.ExternalReference)
 	if !ok {
 		t.Fatal("Media reference is not an ExternalReference")
 	}

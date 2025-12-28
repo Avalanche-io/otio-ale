@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/Avalanche-io/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio"
 )
 
 // Encoder writes OTIO timelines as ALE files
@@ -58,7 +58,7 @@ func NewEncoder(w io.Writer, opts ...EncoderOption) *Encoder {
 }
 
 // Encode writes an OTIO Timeline as an ALE file
-func (e *Encoder) Encode(timeline *opentimelineio.Timeline) error {
+func (e *Encoder) Encode(timeline *gotio.Timeline) error {
 	if timeline == nil {
 		return fmt.Errorf("timeline cannot be nil")
 	}
@@ -72,7 +72,7 @@ func (e *Encoder) Encode(timeline *opentimelineio.Timeline) error {
 }
 
 // timelineToALE converts an OTIO Timeline to an ALEFile structure
-func (e *Encoder) timelineToALE(timeline *opentimelineio.Timeline) (*ALEFile, error) {
+func (e *Encoder) timelineToALE(timeline *gotio.Timeline) (*ALEFile, error) {
 	aleFile := NewALEFile()
 
 	// Get clips first to infer video format
@@ -104,7 +104,7 @@ func (e *Encoder) timelineToALE(timeline *opentimelineio.Timeline) (*ALEFile, er
 }
 
 // inferVideoFormat infers the Avid video format from clip metadata
-func (e *Encoder) inferVideoFormat(clips []*opentimelineio.Clip) string {
+func (e *Encoder) inferVideoFormat(clips []*gotio.Clip) string {
 	maxWidth := 0
 	maxHeight := 0
 
@@ -143,7 +143,7 @@ func (e *Encoder) inferVideoFormat(clips []*opentimelineio.Clip) string {
 }
 
 // determineColumns determines which columns to include based on the timeline content
-func (e *Encoder) determineColumns(timeline *opentimelineio.Timeline) []string {
+func (e *Encoder) determineColumns(timeline *gotio.Timeline) []string {
 	if len(e.columns) > 0 {
 		return e.columns
 	}
@@ -167,7 +167,7 @@ func (e *Encoder) determineColumns(timeline *opentimelineio.Timeline) []string {
 	for _, clip := range clips {
 		ref := clip.MediaReference()
 		if ref != nil {
-			extRef, ok := ref.(*opentimelineio.ExternalReference)
+			extRef, ok := ref.(*gotio.ExternalReference)
 			if ok && extRef.TargetURL() != "" {
 				if !extraColumns[ColumnSourceFile] {
 					extraColumns[ColumnSourceFile] = true
@@ -218,7 +218,7 @@ func (e *Encoder) determineColumns(timeline *opentimelineio.Timeline) []string {
 }
 
 // clipToRow converts an OTIO Clip to an ALE row
-func (e *Encoder) clipToRow(clip *opentimelineio.Clip, columns []string) (map[string]string, error) {
+func (e *Encoder) clipToRow(clip *gotio.Clip, columns []string) (map[string]string, error) {
 	row := make(map[string]string)
 
 	// Get source range
@@ -273,7 +273,7 @@ func (e *Encoder) clipToRow(clip *opentimelineio.Clip, columns []string) (map[st
 
 		case ColumnSourceFile, ColumnTape:
 			if ref := clip.MediaReference(); ref != nil {
-				if extRef, ok := ref.(*opentimelineio.ExternalReference); ok {
+				if extRef, ok := ref.(*gotio.ExternalReference); ok {
 					row[col] = extRef.TargetURL()
 				}
 			}

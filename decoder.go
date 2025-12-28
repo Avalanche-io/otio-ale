@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/Avalanche-io/gotio/opentime"
-	"github.com/Avalanche-io/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio"
 )
 
 // Decoder reads and decodes ALE files into OTIO timelines
@@ -60,7 +60,7 @@ func NewDecoder(r io.Reader, opts ...DecoderOption) *Decoder {
 }
 
 // Decode parses an ALE file and returns an OTIO Timeline
-func (d *Decoder) Decode() (*opentimelineio.Timeline, error) {
+func (d *Decoder) Decode() (*gotio.Timeline, error) {
 	aleFile, err := d.parseALE()
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse ALE: %w", err)
@@ -158,13 +158,13 @@ func (d *Decoder) parseALE() (*ALEFile, error) {
 }
 
 // aleToTimeline converts an ALEFile structure to an OTIO Timeline
-func (d *Decoder) aleToTimeline(aleFile *ALEFile) (*opentimelineio.Timeline, error) {
+func (d *Decoder) aleToTimeline(aleFile *ALEFile) (*gotio.Timeline, error) {
 	if len(aleFile.Rows) == 0 {
 		return nil, fmt.Errorf("no data rows in ALE file")
 	}
 
 	// Create timeline
-	timeline := opentimelineio.NewTimeline(
+	timeline := gotio.NewTimeline(
 		"ALE Timeline",
 		nil,
 		nil,
@@ -181,7 +181,7 @@ func (d *Decoder) aleToTimeline(aleFile *ALEFile) (*opentimelineio.Timeline, err
 
 	if hasTracksColumn {
 		// Parse tracks from Tracks column - group clips by track type
-		trackMap := make(map[string]*opentimelineio.Track)
+		trackMap := make(map[string]*gotio.Track)
 
 		for i, row := range aleFile.Rows {
 			clip, err := d.rowToClip(row, i)
@@ -206,7 +206,7 @@ func (d *Decoder) aleToTimeline(aleFile *ALEFile) (*opentimelineio.Timeline, err
 			track, exists := trackMap[trackKey]
 			if !exists {
 				trackName := trackKey
-				track = opentimelineio.NewTrack(
+				track = gotio.NewTrack(
 					trackName,
 					nil,
 					trackKind,
@@ -237,10 +237,10 @@ func (d *Decoder) aleToTimeline(aleFile *ALEFile) (*opentimelineio.Timeline, err
 		}
 	} else {
 		// No Tracks column - create a single video track like before
-		videoTrack := opentimelineio.NewTrack(
+		videoTrack := gotio.NewTrack(
 			"Video",
 			nil,
-			opentimelineio.TrackKindVideo,
+			gotio.TrackKindVideo,
 			nil,
 			nil,
 		)
@@ -272,13 +272,13 @@ func (d *Decoder) parseTrackKind(tracksValue string) string {
 
 	if strings.Contains(tracksValue, "V") && strings.Contains(tracksValue, "A") {
 		// Both video and audio - use video for primary
-		return opentimelineio.TrackKindVideo
+		return gotio.TrackKindVideo
 	} else if strings.Contains(tracksValue, "A") {
-		return opentimelineio.TrackKindAudio
+		return gotio.TrackKindAudio
 	}
 
 	// Default to video
-	return opentimelineio.TrackKindVideo
+	return gotio.TrackKindVideo
 }
 
 // sortTrackKeys sorts track keys: V before A, then by number
@@ -329,7 +329,7 @@ func compareTrackKeys(a, b string) int {
 }
 
 // rowToClip converts an ALE row to an OTIO Clip
-func (d *Decoder) rowToClip(row map[string]string, index int) (*opentimelineio.Clip, error) {
+func (d *Decoder) rowToClip(row map[string]string, index int) (*gotio.Clip, error) {
 	// Get clip name
 	name := row[d.nameColumnKey]
 	if name == "" {
@@ -380,21 +380,21 @@ func (d *Decoder) rowToClip(row map[string]string, index int) (*opentimelineio.C
 	}
 
 	// Create media reference
-	var mediaRef opentimelineio.MediaReference
+	var mediaRef gotio.MediaReference
 	sourceFile := row[ColumnSourceFile]
 	if sourceFile == "" {
 		sourceFile = row[ColumnTape]
 	}
 
 	if sourceFile != "" {
-		mediaRef = opentimelineio.NewExternalReference(
+		mediaRef = gotio.NewExternalReference(
 			sourceFile,
 			sourceFile,
 			sourceRange,
 			nil,
 		)
 	} else {
-		mediaRef = opentimelineio.NewMissingReference(
+		mediaRef = gotio.NewMissingReference(
 			name,
 			sourceRange,
 			nil,
@@ -402,7 +402,7 @@ func (d *Decoder) rowToClip(row map[string]string, index int) (*opentimelineio.C
 	}
 
 	// Create clip metadata - preserve ALL columns dynamically in metadata["ALE"]
-	metadata := make(opentimelineio.AnyDictionary)
+	metadata := make(gotio.AnyDictionary)
 	aleMetadata := make(map[string]interface{})
 
 	// Parse ASC CDL data first if present
@@ -441,7 +441,7 @@ func (d *Decoder) rowToClip(row map[string]string, index int) (*opentimelineio.C
 	}
 
 	// Create and return clip
-	clip := opentimelineio.NewClip(
+	clip := gotio.NewClip(
 		name,
 		mediaRef,
 		sourceRange,

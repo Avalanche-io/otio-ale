@@ -9,25 +9,25 @@ import (
 	"testing"
 
 	"github.com/Avalanche-io/gotio/opentime"
-	"github.com/Avalanche-io/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio"
 )
 
 func TestEncoder_BasicTimeline(t *testing.T) {
 	// Create a simple timeline with clips
-	timeline := opentimelineio.NewTimeline("Test Timeline", nil, nil)
+	timeline := gotio.NewTimeline("Test Timeline", nil, nil)
 
-	videoTrack := opentimelineio.NewTrack(
+	videoTrack := gotio.NewTrack(
 		"Video",
 		nil,
-		opentimelineio.TrackKindVideo,
+		gotio.TrackKindVideo,
 		nil,
 		nil,
 	)
 
 	// Create clips
-	clip1 := opentimelineio.NewClip(
+	clip1 := gotio.NewClip(
 		"Clip001",
-		opentimelineio.NewMissingReference("", nil, nil),
+		gotio.NewMissingReference("", nil, nil),
 		&opentime.TimeRange{},
 		nil,
 		nil,
@@ -40,9 +40,9 @@ func TestEncoder_BasicTimeline(t *testing.T) {
 		opentime.NewRationalTime(120, 24),
 	)
 
-	clip2 := opentimelineio.NewClip(
+	clip2 := gotio.NewClip(
 		"Clip002",
-		opentimelineio.NewMissingReference("", nil, nil),
+		gotio.NewMissingReference("", nil, nil),
 		&opentime.TimeRange{},
 		nil,
 		nil,
@@ -95,17 +95,17 @@ func TestEncoder_BasicTimeline(t *testing.T) {
 }
 
 func TestEncoder_WithExternalReference(t *testing.T) {
-	timeline := opentimelineio.NewTimeline("Test Timeline", nil, nil)
+	timeline := gotio.NewTimeline("Test Timeline", nil, nil)
 
-	videoTrack := opentimelineio.NewTrack(
+	videoTrack := gotio.NewTrack(
 		"Video",
 		nil,
-		opentimelineio.TrackKindVideo,
+		gotio.TrackKindVideo,
 		nil,
 		nil,
 	)
 
-	mediaRef := opentimelineio.NewExternalReference(
+	mediaRef := gotio.NewExternalReference(
 		"media.mov",
 		"/path/to/media.mov",
 		&opentime.TimeRange{},
@@ -116,7 +116,7 @@ func TestEncoder_WithExternalReference(t *testing.T) {
 		opentime.NewRationalTime(100, 24),
 	)
 
-	clip := opentimelineio.NewClip(
+	clip := gotio.NewClip(
 		"Clip001",
 		mediaRef,
 		mediaRef.AvailableRange(),
@@ -149,26 +149,26 @@ func TestEncoder_WithExternalReference(t *testing.T) {
 }
 
 func TestEncoder_CustomColumns(t *testing.T) {
-	timeline := opentimelineio.NewTimeline("Test Timeline", nil, nil)
+	timeline := gotio.NewTimeline("Test Timeline", nil, nil)
 
-	videoTrack := opentimelineio.NewTrack(
+	videoTrack := gotio.NewTrack(
 		"Video",
 		nil,
-		opentimelineio.TrackKindVideo,
+		gotio.TrackKindVideo,
 		nil,
 		nil,
 	)
 
-	metadata := make(opentimelineio.AnyDictionary)
+	metadata := make(gotio.AnyDictionary)
 	// Custom columns should be in metadata["ALE"]
 	aleMetadata := make(map[string]interface{})
 	aleMetadata["Scene"] = "Scene001"
 	aleMetadata["Take"] = "Take1"
 	metadata["ALE"] = aleMetadata
 
-	clip := opentimelineio.NewClip(
+	clip := gotio.NewClip(
 		"Clip001",
-		opentimelineio.NewMissingReference("", nil, nil),
+		gotio.NewMissingReference("", nil, nil),
 		&opentime.TimeRange{},
 		metadata,
 		nil,
@@ -219,7 +219,7 @@ func TestEncoder_NilTimeline(t *testing.T) {
 }
 
 func TestEncoder_EmptyTimeline(t *testing.T) {
-	timeline := opentimelineio.NewTimeline("Empty Timeline", nil, nil)
+	timeline := gotio.NewTimeline("Empty Timeline", nil, nil)
 
 	var buf bytes.Buffer
 	encoder := NewEncoder(&buf)
@@ -244,19 +244,19 @@ func TestEncoder_EmptyTimeline(t *testing.T) {
 
 func TestRoundTrip(t *testing.T) {
 	// Create a timeline
-	timeline := opentimelineio.NewTimeline("Test Timeline", nil, nil)
+	timeline := gotio.NewTimeline("Test Timeline", nil, nil)
 
-	videoTrack := opentimelineio.NewTrack(
+	videoTrack := gotio.NewTrack(
 		"Video",
 		nil,
-		opentimelineio.TrackKindVideo,
+		gotio.TrackKindVideo,
 		nil,
 		nil,
 	)
 
-	clip := opentimelineio.NewClip(
+	clip := gotio.NewClip(
 		"Clip001",
-		opentimelineio.NewMissingReference("", nil, nil),
+		gotio.NewMissingReference("", nil, nil),
 		&opentime.TimeRange{},
 		nil,
 		nil,
@@ -293,7 +293,7 @@ func TestRoundTrip(t *testing.T) {
 		t.Fatalf("Expected 1 clip, got %d", len(clips))
 	}
 
-	decodedClip := clips[0].(*opentimelineio.Clip)
+	decodedClip := clips[0].(*gotio.Clip)
 	if decodedClip.Name() != "Clip001" {
 		t.Errorf("Expected clip name 'Clip001', got '%s'", decodedClip.Name())
 	}

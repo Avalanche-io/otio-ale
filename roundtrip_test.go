@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Avalanche-io/gotio/opentimelineio"
+	"github.com/Avalanche-io/gotio"
 )
 
 func TestRoundTrip_WithAllColumns(t *testing.T) {
@@ -189,19 +189,19 @@ func TestRoundTrip_WithTracks(t *testing.T) {
 
 func TestDynamicColumnPreservation(t *testing.T) {
 	// Create a timeline with clips that have custom ALE metadata
-	timeline := opentimelineio.NewTimeline("Test", nil, nil)
-	track := opentimelineio.NewTrack("V", nil, opentimelineio.TrackKindVideo, nil, nil)
+	timeline := gotio.NewTimeline("Test", nil, nil)
+	track := gotio.NewTrack("V", nil, gotio.TrackKindVideo, nil, nil)
 
-	metadata := make(opentimelineio.AnyDictionary)
+	metadata := make(gotio.AnyDictionary)
 	aleMetadata := make(map[string]interface{})
 	aleMetadata["CustomColumn1"] = "Value1"
 	aleMetadata["CustomColumn2"] = "Value2"
 	aleMetadata["Scene"] = "Scene001"
 	metadata["ALE"] = aleMetadata
 
-	clip := opentimelineio.NewClip(
+	clip := gotio.NewClip(
 		"TestClip",
-		opentimelineio.NewMissingReference("", nil, nil),
+		gotio.NewMissingReference("", nil, nil),
 		nil,
 		metadata,
 		nil,
